@@ -13,3 +13,5 @@ ChatCraft/Bleeding-Edge/Validation/*
 **/Audio-Settings.json
 **/Flow-Tuning.json
 **/Phonon-Narration/
+dist/
+**/WordCraft-Errors.log

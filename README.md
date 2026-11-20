@@ -81,3 +81,17 @@ remain to be tested.
 Code is MIT licensed; see LICENSE. Sound excerpts are CC0; see
 THIRD-PARTY-NOTICES.md. Open-source licensing permits compiling and
 redistributing this software, including compiled builds.
+
+## Package a Windows download
+
+After building, run:
+
+~~~powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Package.ps1
+~~~
+
+The dist folder receives a ZIP with the compiled app, graphics DLL, visual and
+reading presets, a double-click launcher, setup notes, license and file hashes.
+Existing package outputs are never overwritten. Extract the entire ZIP before
+running Open Chat Craft.cmd. The ZIP is unsigned; Windows may show a publisher
+or reputation prompt. No app binaries are committed to this repository.
