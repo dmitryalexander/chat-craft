@@ -35,7 +35,7 @@ installed Windows Japanese IME. Missing fonts use Windows font fallback.
 The WordCraft and PageCraft folders contain the shared source needed for this
 app, not complete distributions of those applications.
 
-## New in 0.19.0
+## New in 0.19.1\n\nCtrl+Shift+Space replays from the beginning. Shift+Space now types a normal\nspace, fixing uppercase phrases such as CAPS LOCK. Mouse wheel resizes the\nactual window between 25% and 100% of the current monitor dimensions.\nWheel over Settings scrolls the panel normally.\n\n## New in 0.19.0
 
 Caps Lock now includes master sound volume, WordCraft-style Dark/Darker/Darkest
 background noise with independent primary and reading layers, and a four-step
@@ -52,12 +52,12 @@ See [all controls and sound options](CONTROLS.md). New downloads start at Medium
 | Enter | Send draft to the selected chat |
 | Space during reply | Pause/resume |
 | Shift held | Slower reply playback |
-| Shift+Space while idle | Replay latest loaded reply |
+| Ctrl+Shift+Space | Replay latest loaded reply |
 | Ctrl+Tab | Reopen reply at current position |
 | Shift+left-click/drag | Seek through latest reply |
 | Ctrl+left-drag vertically | App sound volume |
 | Caps Lock | Sound volume, background sound, graphics quality and colors |
-| Backtick or tilde | Fullscreen |
+| Mouse wheel | Resize centered window, 25–100% of monitor dimensions |\n| Backtick or tilde | Fullscreen / restore last wheel size |
 
 ## Privacy and local files
 
@@ -81,6 +81,7 @@ powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\T
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Reply-Performance.ps1
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Playback-Gestures.ps1
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Runtime-Settings.ps1
+powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Replay-Window-Zoom.ps1
 ~~~
 
 Test-Codex-Discovery.ps1 is a separate opt-in integration test: it reads your

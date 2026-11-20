@@ -28,7 +28,7 @@ try {
     & $rendererBuild -NativeOutputPath $gpu
     . (Join-Path $PSScriptRoot 'Stage-ChatDependencies.ps1')
     $stagedExe = Join-Path $stage.FullName 'ChatCraft.exe'
-    & $compiler /nologo /target:winexe /platform:x64 /optimize+ /unsafe /r:System.Windows.Forms.dll /r:System.Drawing.dll /r:System.Web.Extensions.dll @references "/win32icon:$icon" "/resource:$icon,ChatCraft.ico" "/resource:$morse,DialUpMorse.pcm" "/out:$stagedExe" (Join-Path $app 'JapaneseRomaji.cs') (Join-Path $app 'ChatTypography.cs') (Join-Path $app 'ChatColorPanel.cs') (Join-Path $app 'ChatCraftWindow.cs') (Join-Path $app 'ChatPlaybackGestures.cs') (Join-Path $app 'ChatRuntimeSettings.cs') (Join-Path $app 'CloudSmokeView.cs') (Join-Path $app 'FlowSmokeOverlay.cs') $morseSource (Join-Path $app 'DesktopChatConnection.cs') @sources @flowSources
+    & $compiler /nologo /target:winexe /platform:x64 /optimize+ /unsafe /r:System.Windows.Forms.dll /r:System.Drawing.dll /r:System.Web.Extensions.dll @references "/win32icon:$icon" "/resource:$icon,ChatCraft.ico" "/resource:$morse,DialUpMorse.pcm" "/out:$stagedExe" (Join-Path $app 'JapaneseRomaji.cs') (Join-Path $app 'ChatTypography.cs') (Join-Path $app 'ChatColorPanel.cs') (Join-Path $app 'ChatCraftWindow.cs') (Join-Path $app 'ChatPlaybackGestures.cs') (Join-Path $app 'ChatRuntimeSettings.cs') (Join-Path $app 'ChatWindowZoom.cs') (Join-Path $app 'CloudSmokeView.cs') (Join-Path $app 'FlowSmokeOverlay.cs') $morseSource (Join-Path $app 'DesktopChatConnection.cs') @sources @flowSources
     if ($LASTEXITCODE) { throw 'Chat Craft compilation failed.' }
     if (Test-Path -LiteralPath $exe) {
         $eastern = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTimeOffset]::UtcNow, 'Eastern Standard Time')

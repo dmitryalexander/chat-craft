@@ -1,4 +1,4 @@
-# Chat Craft controls — 0.19.0
+# Chat Craft controls — 0.19.1
 
 | Control | Action |
 | --- | --- |
@@ -16,10 +16,12 @@
 | Enter | Send draft to selected chat |
 | Space during reply | Pause/resume |
 | Shift held | Slower reading |
-| Shift+Space while idle | Replay latest reply |
+| Ctrl+Shift+Space | Replay latest reply from the beginning |
+| Shift+Space | Normal space while typing; returns from reply to typing |
+| Mouse wheel forward/back | Grow/shrink centered window, 25–100% of monitor width and height |
 | Ctrl+Tab | Reopen reply at current position |
 | Shift+left-click/drag | Seek through latest reply |
-| Backtick or tilde | Fullscreen |
+| Backtick or tilde | Toggle fullscreen / last wheel size |
 
 Settings changes apply live and save independently of WordCraft.
 Minimizing fades background sound to silence and suspends smoke. Closing stops

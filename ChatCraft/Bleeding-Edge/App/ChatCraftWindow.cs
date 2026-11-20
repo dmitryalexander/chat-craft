@@ -17,7 +17,7 @@ using Forms = System.Windows.Forms;
 
 [assembly: AssemblyTitle("Chat Craft")]
 [assembly: AssemblyProduct("Chat Craft")]
-[assembly: AssemblyVersion("0.19.0.0")]
+[assembly: AssemblyVersion("0.19.1.0")]
 
 sealed partial class ChatCraftWindow : Window
 {
@@ -153,6 +153,7 @@ sealed partial class ChatCraftWindow : Window
         StateChanged += (sender, args) => { scene.SetSuspended(WindowState == WindowState.Minimized); SyncBackgroundSound(); };
         backgroundOutput = new MorseOutput(enableBackgroundAudio,backgroundNoise.Fill);
         InitializePlaybackGestures();
+        SizeChanged += (sender,args) => { if(colorPanel!=null)colorPanel.MaxWidth=Math.Max(1,ActualWidth-36); };
         MouseDown += (sender, args) => { if (!ReplyOpen && colorPanel==null) draft.Focus(); };
     }
 
@@ -172,6 +173,7 @@ sealed partial class ChatCraftWindow : Window
         if(colorResume!=0)colorReader.PausePlayback();
         colorPanel=new ChatColorPanel(scene.Colors,scene.Phase,
             phase=>scene.PreviewColors(phase),CloseColors,BuildRuntimeControls(),SaveAudioValues);
+        colorPanel.MaxWidth=Math.Max(1,ActualWidth-36);
         Panel.SetZIndex(colorPanel,100);
         layout.Children.Add(colorPanel);
         KeyboardNavigation.SetTabNavigation(colorPanel,KeyboardNavigationMode.Cycle);
@@ -213,11 +215,9 @@ sealed partial class ChatCraftWindow : Window
             return;
         }
         ModifierKeys modifiers = Keyboard.Modifiers;
-        if (e.Key == Key.Space && modifiers == ModifierKeys.Shift)
+        if (HandleSpaceShortcut(e.Key, modifiers, e.IsRepeat))
         {
             e.Handled = true;
-            if (!e.IsRepeat)
-                ReplayReply();
             return;
         }
         if (ReplyOpen)
@@ -256,7 +256,7 @@ sealed partial class ChatCraftWindow : Window
         else if (!draft.IsKeyboardFocused && !thinking)
             draft.Focus();
 
-        if (e.Key == Key.Space && !e.Handled && modifiers == ModifierKeys.None && !thinking)
+        if (e.Key == Key.Space && !e.Handled && (modifiers == ModifierKeys.None || modifiers == ModifierKeys.Shift) && !thinking)
             scene.CommitWord();
     }
 
@@ -887,24 +887,7 @@ sealed partial class ChatCraftWindow : Window
 
     void ToggleFullscreen()
     {
-        if (fullscreen)
-        {
-            WindowStyle = WindowStyle.SingleBorderWindow;
-            ResizeMode = ResizeMode.CanResize;
-            WindowState = WindowState.Normal;
-            Width = 1000;
-            Height = 650;
-            fullscreen = false;
-            return;
-        }
-        IntPtr window = new WindowInteropHelper(this).Handle;
-        if (window == IntPtr.Zero)
-            return;
-        var bounds = Forms.Screen.FromHandle(window).Bounds;
-        WindowState = WindowState.Normal;
-        WindowStyle = WindowStyle.None;
-        ResizeMode = ResizeMode.NoResize;
-        fullscreen = SetWindowPos(window, IntPtr.Zero, bounds.Left, bounds.Top, bounds.Width, bounds.Height, 0x14);
+        ApplyWindowScale(fullscreen ? restoreWindowScale : 1);
     }
 
     protected override void OnClosed(EventArgs e)
