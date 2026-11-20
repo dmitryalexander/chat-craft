@@ -35,30 +35,9 @@ sealed partial class ChatCraftWindow
         MouseLeave += (s,e) => { if(!GestureActive)gestureLayer.Clear(); };
     }
 
-    void LoadGestureVolume()
-    {
-        try
-        {
-            if(!File.Exists(volumeSettingsPath))return;
-            var settings=new JavaScriptSerializer().Deserialize<Dictionary<string,double>>(File.ReadAllText(volumeSettingsPath));
-            double value;
-            if(settings!=null&&settings.TryGetValue("volume",out value)&&!Double.IsNaN(value)&&!Double.IsInfinity(value))
-                morse.Volume=value;
-        }
-        catch(Exception error) { if(!(error is IOException||error is UnauthorizedAccessException||error is ArgumentException||error is InvalidOperationException))throw;Trace.WriteLine(error.Message); }
-    }
+    void LoadGestureVolume() { LoadAudioValues(); }
 
-    void SaveGestureVolume()
-    {
-        if(!volumeDirty)return;
-        try
-        {
-            File.WriteAllText(volumeSettingsPath,new JavaScriptSerializer().Serialize(new { volume=morse.Volume }));
-            volumeDirty=false;
-        }
-        catch(IOException error){Trace.WriteLine(error.Message);}
-        catch(UnauthorizedAccessException error){Trace.WriteLine(error.Message);}
-    }
+    void SaveGestureVolume() { if(volumeDirty)SaveAudioValues(); }
 
     internal static double DragVolume(double initial,double startY,double y)
     { return Math.Max(0,Math.Min(1,initial+(startY-y)/200)); }
@@ -119,7 +98,7 @@ sealed partial class ChatCraftWindow
             if(!gestureMoved&&Math.Abs(gestureStartY-p.Y)<3)return;
             gestureMoved=true;
             morse.Volume=DragVolume(gestureStartVolume,gestureStartY,p.Y);
-            volumeDirty=true;
+            volumeDirty=true;SyncBackgroundSound();
             gestureLayer.Show(-1,"Volume "+Math.Round(morse.Volume*100)+"%");
             e.Handled=true;
         }
@@ -191,11 +170,13 @@ sealed partial class ChatCraftWindow
         if(wasScrub&&!cancel&&pendingScrubX.HasValue)SeekReplyScrub(pendingScrubX.Value);
         pendingScrubX=null;
         volumeDragging=scrubbingReply=false;
+        SyncBackgroundSound();
         if(Mouse.Captured==layout)Mouse.Capture(null);
         gestureLayer.Clear();
         if(wasVolume)
         {
             if(cancel)morse.Volume=gestureStartVolume;
+            SyncBackgroundSound();
             SaveGestureVolume();
         }
         if(wasScrub && !closed)

@@ -17,7 +17,7 @@ using Forms = System.Windows.Forms;
 
 [assembly: AssemblyTitle("Chat Craft")]
 [assembly: AssemblyProduct("Chat Craft")]
-[assembly: AssemblyVersion("0.18.27.0")]
+[assembly: AssemblyVersion("0.19.0.0")]
 
 sealed partial class ChatCraftWindow : Window
 {
@@ -89,7 +89,9 @@ sealed partial class ChatCraftWindow : Window
         app.Run(new ChatCraftWindow(client));
     }
 
-    internal ChatCraftWindow(CodexCraftClient client)
+    internal ChatCraftWindow(CodexCraftClient client) : this(client,true) { }
+
+    internal ChatCraftWindow(CodexCraftClient client,bool enableBackgroundAudio)
     {
         this.client = client;
         Title = "Chat Craft";
@@ -148,7 +150,8 @@ sealed partial class ChatCraftWindow : Window
             draft.Focus();
             Dispatcher.BeginInvoke(new Action(ChooseChat), DispatcherPriority.ApplicationIdle);
         };
-        StateChanged += (sender, args) => scene.SetSuspended(WindowState == WindowState.Minimized);
+        StateChanged += (sender, args) => { scene.SetSuspended(WindowState == WindowState.Minimized); SyncBackgroundSound(); };
+        backgroundOutput = new MorseOutput(enableBackgroundAudio,backgroundNoise.Fill);
         InitializePlaybackGestures();
         MouseDown += (sender, args) => { if (!ReplyOpen && colorPanel==null) draft.Focus(); };
     }
@@ -168,12 +171,13 @@ sealed partial class ChatCraftWindow : Window
         colorReader=flow==null ? null : flow.Reader;
         if(colorResume!=0)colorReader.PausePlayback();
         colorPanel=new ChatColorPanel(scene.Colors,scene.Phase,
-            phase=>scene.PreviewColors(phase),CloseColors);
+            phase=>scene.PreviewColors(phase),CloseColors,BuildRuntimeControls(),SaveAudioValues);
         Panel.SetZIndex(colorPanel,100);
         layout.Children.Add(colorPanel);
         KeyboardNavigation.SetTabNavigation(colorPanel,KeyboardNavigationMode.Cycle);
         layout.UpdateLayout();
         colorPanel.FocusEditor();
+        SyncBackgroundSound();
     }
 
     void CloseColors()
@@ -187,6 +191,7 @@ sealed partial class ChatCraftWindow : Window
         if(colorResume!=0 && ReplyOpen && flow.Reader==colorReader)
             colorReader.StartPlayback(colorResume);
         colorResume=0;colorReader=null;
+        SyncBackgroundSound();
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -466,6 +471,7 @@ sealed partial class ChatCraftWindow : Window
 
     void SoundReplyLetter()
     {
+        SyncBackgroundSound();
         var reader = flow.Reader;
         if (!ReplyOpen || reader.PlaybackDirection == 0)
             return;
@@ -523,6 +529,7 @@ sealed partial class ChatCraftWindow : Window
 
     void Tick()
     {
+        SyncBackgroundSound();
         TickReplyScrub();
         double now = time.Elapsed.TotalSeconds;
         bool waiting = WaitingForReply;
@@ -904,12 +911,14 @@ sealed partial class ChatCraftWindow : Window
     {
         if(colorPanel!=null)colorPanel.Save();
         closed = true;
+        SyncBackgroundSound();
         FinishPlaybackGesture(true);
         SaveGestureVolume();
         timer.Stop();
         watchTimer.Stop();
         if (desktopFollow != null)
             desktopFollow.Cancel();
+        backgroundOutput.Dispose();
         morse.Dispose();
         if (flow != null)
             flow.Dispose();

@@ -33,6 +33,15 @@ installed Windows Japanese IME. Missing fonts use Windows font fallback.
 The WordCraft and PageCraft folders contain the shared source needed for this
 app, not complete distributions of those applications.
 
+## New in 0.19.0
+
+Caps Lock now includes master sound volume, WordCraft-style Dark/Darker/Darkest
+background noise with independent primary and reading layers, and a four-step
+graphics quality slider. Lower quality reduces actual GPU simulation resolution
+and pressure-solver work while reading text stays sharp.
+
+See [all controls and sound options](CONTROLS.md). New downloads start at Medium.
+
 ## Controls
 
 | Control | Action |
@@ -45,13 +54,13 @@ app, not complete distributions of those applications.
 | Ctrl+Tab | Reopen reply at current position |
 | Shift+left-click/drag | Seek through latest reply |
 | Ctrl+left-drag vertically | App sound volume |
-| Caps Lock | Colors and gradients |
+| Caps Lock | Sound volume, background sound, graphics quality and colors |
 | Backtick or tilde | Fullscreen |
 
 ## Privacy and local files
 
 The source distribution includes code, an icon, CC0 sound excerpts and visual
-presets. It contains no developer chats, credentials, logs or captured replies.
+presets. Background noise is synthesized locally without saved audio files. It contains no developer chats, credentials, logs or captured replies.
 Chat Craft accesses the current user's Codex account and saved chats through
 the locally installed Codex executable and Desktop connection. Messages sent
 through Codex are subject to that user's Codex configuration and service.

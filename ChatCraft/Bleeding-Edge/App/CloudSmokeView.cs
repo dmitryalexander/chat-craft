@@ -99,6 +99,8 @@ sealed class CloudSmokeView : FrameworkElement, IDisposable
             TimeSpan.FromMilliseconds(enabled?650:700)) { EasingFunction=ReboundEase });
     }
 
+    internal void SetGraphicsQuality(QualityTier tier) { smoke.SetQuality(tier); }
+
     internal void SetSuspended(bool value)
     {
         suspended = value;

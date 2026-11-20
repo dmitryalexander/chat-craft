@@ -1,6 +1,6 @@
 param([string]$OutputDirectory = (Join-Path $PSScriptRoot 'dist'))
 $ErrorActionPreference = 'Stop'
-$folder = Join-Path $OutputDirectory 'ChatCraft-0.18.27-windows-x64'
+$folder = Join-Path $OutputDirectory 'ChatCraft-0.19.0-windows-x64'
 $zip = "$folder.zip"
 if ((Test-Path -LiteralPath $folder) -or (Test-Path -LiteralPath $zip)) { throw 'Output already exists. Choose another output directory.' }
 $items = @(
@@ -10,7 +10,7 @@ $items = @(
  'ChatCraft/Bleeding-Edge/View-Tuning.txt',
  'ChatCraft/Bleeding-Edge/View-Quality.txt',
  'WordCraft/Bleeding-Edge/Word-Flow-Defaults.json',
- 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md')
+ 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md', 'CONTROLS.md')
 foreach ($item in $items) {
  if (!(Test-Path -LiteralPath (Join-Path $PSScriptRoot $item) -PathType Leaf)) { throw "Missing package input: $item. Build first." }
 }
@@ -28,7 +28,7 @@ popd
 '@
 [IO.File]::WriteAllText((Join-Path $folder 'Open Chat Craft.cmd'),$launch.Replace([string][char]10,([string][char]13+[char]10)),[Text.Encoding]::ASCII)
 $quick = @'
-CHAT CRAFT 0.18.27 - WINDOWS X64
+CHAT CRAFT 0.19.0 - WINDOWS X64
 
 Extract the whole ZIP into a writable folder, then double-click Open Chat Craft.cmd.
 Keep the folders together. No developer tools are needed to run this package.
@@ -38,9 +38,10 @@ installed, signed-in Codex Desktop with an existing chat.
 Open that chat in Codex Desktop, then select it in Chat Craft.
 Your own Codex access is required; AI access is not included.
 
-Ctrl+O: chat picker. Enter: send. Caps Lock: colors. Backtick: fullscreen.
+Ctrl+O: chat picker. Enter: send. Caps Lock: sound, quality and colors. Backtick: fullscreen.
 Space: pause/resume reply. Shift+Space: replay. Shift-drag: seek.
-Ctrl-drag vertically: app volume. Close the window to quit.
+Ctrl-drag vertically: master volume. Caps Lock includes background sound levels.
+Graphics quality: Low/Medium/High/Ultra. New packages start at Medium. Close the window to quit.
 
 See README.md for setup details, privacy information and limitations.
 Tested on the developer's computer; second-computer compatibility is unverified.

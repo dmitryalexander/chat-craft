@@ -15,3 +15,5 @@ ChatCraft/Bleeding-Edge/Validation/*
 **/Phonon-Narration/
 dist/
 **/WordCraft-Errors.log
+**/*-Diary.md
+*.recovery

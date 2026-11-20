@@ -62,7 +62,7 @@ try {
  Check ([Math]::Abs((Prop $morse Volume)-0.37) -lt 0.0001) 'Isolated volume persistence failed'
 
  $ot=$assembly.GetType('MorseOutput')
- $output=[Activator]::CreateInstance($ot,$flags,$null,[object[]]@($false),$null)
+ $output=[Activator]::CreateInstance($ot,$flags,$null,[object[]]@($false,$null),$null)
  try {
   SetProp $output Volume 0.5
   $samples=[int16[]]::new(480);for($i=0;$i -lt 480;$i++){$samples[$i]=12000}

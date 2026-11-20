@@ -17,7 +17,7 @@ function Invoke($o,$name,[object[]]$values){$o.GetType().GetMethod($name,$flags)
 function Check($value,$message){if(!$value){throw $message}}
 function Pump{[Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke([Action]{},[Windows.Threading.DispatcherPriority]::Background)}
 $client=[Activator]::CreateInstance($assembly.GetType('CodexCraftClient'),$flags,$null,[object[]]@($null,[string]$root),$null)
-$window=[Activator]::CreateInstance($assembly.GetType('ChatCraftWindow'),$flags,$null,[object[]]@($client),$null)
+$window=[Activator]::CreateInstance($assembly.GetType('ChatCraftWindow'),$flags,$null,[object[]]@($client,$false),$null)
 Invoke (Field $window morse) Dispose
 $grid=$window.Content;$window.Content=$null
 $parameters=New-Object Windows.Interop.HwndSourceParameters 'Japanese rendering fixture'

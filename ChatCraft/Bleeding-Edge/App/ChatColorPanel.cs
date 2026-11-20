@@ -116,6 +116,7 @@ sealed class ChatColorPanel : Border
     readonly ChatColorProfiles profiles;
     readonly Action<int?> preview;
     readonly Action close;
+    readonly Func<bool> saveExtras;
     readonly ComboBox target = new ComboBox { Margin=new Thickness(0,10,0,12),Foreground=Brushes.Black };
     readonly TextBox hex = new TextBox { FontFamily=new FontFamily("Consolas"),FontSize=18,Margin=new Thickness(0,8,0,8) };
     readonly Border swatch = new Border { Height=24,CornerRadius=new CornerRadius(7) };
@@ -132,17 +133,19 @@ sealed class ChatColorPanel : Border
     bool loading;
     int phase;
     internal int Phase { get { return phase; } }
-    internal ChatColorPanel(ChatColorProfiles profiles,int initialPhase,Action<int?> preview,Action close)
+    internal ChatColorPanel(ChatColorProfiles profiles,int initialPhase,Action<int?> preview,Action close,FrameworkElement extra=null,Func<bool> saveExtras=null)
     {
-        this.profiles=profiles;this.phase=initialPhase;this.preview=preview;this.close=close;
+        this.profiles=profiles;this.phase=initialPhase;this.preview=preview;this.close=close;this.saveExtras=saveExtras;
         Width=350;HorizontalAlignment=HorizontalAlignment.Right;VerticalAlignment=VerticalAlignment.Stretch;
         Margin=new Thickness(18);Padding=new Thickness(20);CornerRadius=new CornerRadius(15);
         Background=new SolidColorBrush(Color.FromArgb(249,18,25,37));
         BorderBrush=new SolidColorBrush(Color.FromRgb(73,94,118));BorderThickness=new Thickness(1);
         var scroll=new ScrollViewer { VerticalScrollBarVisibility=ScrollBarVisibility.Auto,HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled };
         var body=new StackPanel();scroll.Content=body;Child=scroll;
-        body.Children.Add(new TextBlock { Text="Colors",FontSize=23,FontWeight=FontWeights.SemiBold });
+        body.Children.Add(new TextBlock { Text="Settings",FontSize=23,FontWeight=FontWeights.SemiBold });
         body.Children.Add(new TextBlock { Text="Caps Lock / Esc saves & closes",Opacity=.65,Margin=new Thickness(0,4,0,14) });
+        if(extra!=null)body.Children.Add(extra);
+        body.Children.Add(new TextBlock { Text="Colors",FontSize=20,Margin=new Thickness(0,8,0,8) });
         var tabs=new Grid();for(int i=0;i<3;i++)tabs.ColumnDefinitions.Add(new ColumnDefinition());
         string[] names={"Typing","Thinking","Reply"};
         for(int i=0;i<3;i++)
@@ -226,8 +229,8 @@ sealed class ChatColorPanel : Border
         Color c=Color.FromRgb((byte)channels[0].Value,(byte)channels[1].Value,(byte)channels[2].Value);
         profiles.Set(phase,Key,c);loading=true;hex.Text=ChatColorProfiles.Hex(c);LoadChannels(c);loading=false;
     }
-    internal bool Save() { bool ok=profiles.Save();status.Text=profiles.Error;return ok; }
-    internal void FocusEditor() { target.Focus(); }
+    internal bool Save() { bool ok=profiles.Save(); if(saveExtras!=null && !saveExtras()){status.Text="Could not save audio settings. Check folder access.";return false;} status.Text=profiles.Error;return ok; }
+    internal void FocusEditor() { if(saveExtras!=null){Focusable=true;Focus();}else target.Focus(); }
 }
 
 sealed class ChatVisualColorPicker : Grid
