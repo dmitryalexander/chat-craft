@@ -1,0 +1,15 @@
+*.exe
+*.dll
+*.obj
+*.lib
+*.exp
+*.pdb
+*.lnk
+*.log
+*.zip
+Trash/
+ChatCraft/Bleeding-Edge/Validation/*
+!ChatCraft/Bleeding-Edge/Validation/.gitkeep
+**/Audio-Settings.json
+**/Flow-Tuning.json
+**/Phonon-Narration/
