@@ -5,6 +5,10 @@ flowing text playback and dial-up-inspired sound.
 
 **[Watch the Chat Craft demo](https://www.youtube.com/watch?v=HEeHiGlLMHU)** · **[Download for Windows](https://github.com/dmitryalexander/chat-craft/releases/latest)**
 
+**Keyboard controls: press F1 to open the controls overlay; press F1 or Esc to close it.**
+
+*The F1 overlay is available in the current local build (0.20.4) and is planned for the next public release. The published 0.19.1 download does not include it yet.*
+
 ## Requirements
 
 - Windows x64, .NET Framework 4.8 and a Direct3D 11-capable graphics driver.
@@ -35,7 +39,14 @@ installed Windows Japanese IME. Missing fonts use Windows font fallback.
 The WordCraft and PageCraft folders contain the shared source needed for this
 app, not complete distributions of those applications.
 
-## New in 0.19.1\n\nCtrl+Shift+Space replays from the beginning. Shift+Space now types a normal\nspace, fixing uppercase phrases such as CAPS LOCK. Mouse wheel resizes the\nactual window between 25% and 100% of the current monitor dimensions.\nWheel over Settings scrolls the panel normally.\n\n## New in 0.19.0
+## New in 0.19.1
+
+Ctrl+Shift+Space replays from the beginning. Shift+Space now types a normal
+space, fixing uppercase phrases such as CAPS LOCK. Mouse wheel resizes the
+actual window between 25% and 100% of the current monitor dimensions.
+Wheel over Settings scrolls the panel normally.
+
+## New in 0.19.0
 
 Caps Lock now includes master sound volume, WordCraft-style Dark/Darker/Darkest
 background noise with independent primary and reading layers, and a four-step
@@ -45,6 +56,10 @@ and pressure-solver work while reading text stays sharp.
 See [all controls and sound options](CONTROLS.md). New downloads start at Medium.
 
 ## Controls
+
+**Next build:** `F1` shows the keyboard controls overlay; `F1` or `Esc` closes it.
+
+The table below describes the currently published 0.19.1 release.
 
 | Control | Action |
 | --- | --- |
@@ -57,7 +72,8 @@ See [all controls and sound options](CONTROLS.md). New downloads start at Medium
 | Shift+left-click/drag | Seek through latest reply |
 | Ctrl+left-drag vertically | App sound volume |
 | Caps Lock | Sound volume, background sound, graphics quality and colors |
-| Mouse wheel | Resize centered window, 25–100% of monitor dimensions |\n| Backtick or tilde | Fullscreen / restore last wheel size |
+| Mouse wheel | Resize centered window, 25–100% of monitor dimensions |
+| Backtick or tilde | Fullscreen / restore last wheel size |
 
 ## Privacy and local files
 
