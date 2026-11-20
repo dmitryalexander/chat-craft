@@ -17,7 +17,7 @@ using Forms = System.Windows.Forms;
 
 [assembly: AssemblyTitle("Chat Craft")]
 [assembly: AssemblyProduct("Chat Craft")]
-[assembly: AssemblyVersion("0.19.1.0")]
+[assembly: AssemblyVersion("0.20.6.0")]
 
 sealed partial class ChatCraftWindow : Window
 {
@@ -105,11 +105,12 @@ sealed partial class ChatCraftWindow : Window
         layout.Children.Add(draft);
         layout.Children.Add(scene);
         layout.Children.Add(replyPane);
-        Content = layout;
+        InitializeSimulationViewport();
         scene.Colors.Changed += ApplyReplyColor;
         UpdateChatTitle();
         draft.PreviewTextInput += (sender, args) =>
         {
+            if(helpOverlay!=null){args.Handled=true;return;}
             if (thinking || String.IsNullOrEmpty(args.Text))
                 return;
             if (ReplyOpen && !String.IsNullOrWhiteSpace(args.Text))
@@ -153,8 +154,8 @@ sealed partial class ChatCraftWindow : Window
         StateChanged += (sender, args) => { scene.SetSuspended(WindowState == WindowState.Minimized); SyncBackgroundSound(); };
         backgroundOutput = new MorseOutput(enableBackgroundAudio,backgroundNoise.Fill);
         InitializePlaybackGestures();
-        SizeChanged += (sender,args) => { if(colorPanel!=null)colorPanel.MaxWidth=Math.Max(1,ActualWidth-36); };
-        MouseDown += (sender, args) => { if (!ReplyOpen && colorPanel==null) draft.Focus(); };
+        SizeChanged += (sender,args) => { if(colorPanel!=null)colorPanel.MaxWidth=Math.Max(1,windowSurface.ActualWidth-36); };
+        MouseDown += (sender, args) => { if (!ReplyOpen && colorPanel==null && helpOverlay==null) draft.Focus(); };
     }
 
     void ApplyReplyColor()
@@ -173,9 +174,9 @@ sealed partial class ChatCraftWindow : Window
         if(colorResume!=0)colorReader.PausePlayback();
         colorPanel=new ChatColorPanel(scene.Colors,scene.Phase,
             phase=>scene.PreviewColors(phase),CloseColors,BuildRuntimeControls(),SaveAudioValues);
-        colorPanel.MaxWidth=Math.Max(1,ActualWidth-36);
+        colorPanel.MaxWidth=Math.Max(1,windowSurface.ActualWidth-36);
         Panel.SetZIndex(colorPanel,100);
-        layout.Children.Add(colorPanel);
+        windowSurface.Children.Add(colorPanel);
         KeyboardNavigation.SetTabNavigation(colorPanel,KeyboardNavigationMode.Cycle);
         layout.UpdateLayout();
         colorPanel.FocusEditor();
@@ -185,7 +186,7 @@ sealed partial class ChatCraftWindow : Window
     void CloseColors()
     {
         if(colorPanel==null || !colorPanel.Save())return;
-        layout.Children.Remove(colorPanel);
+        windowSurface.Children.Remove(colorPanel);
         colorPanel=null;
         scene.PreviewColors(null);
         ApplyReplyColor();
@@ -202,6 +203,8 @@ sealed partial class ChatCraftWindow : Window
         HandleFullscreenPreviewKeyDown(this, e);
         if (e.Handled)
             return;
+        if(e.Key==Key.F1){e.Handled=true;if(!e.IsRepeat)ToggleHelp();return;}
+        if(helpOverlay!=null){e.Handled=true;if(e.Key==Key.Escape&&!e.IsRepeat)CloseHelp();return;}
         if (HandleGestureKey(e)) return;
         if(e.Key==Key.Capital)
         {
@@ -220,6 +223,11 @@ sealed partial class ChatCraftWindow : Window
             e.Handled = true;
             return;
         }
+        if(e.Key==Key.Tab && modifiers==ModifierKeys.Control)
+        {
+            e.Handled=HandleReplyKey(Forms.Keys.Control|Forms.Keys.Tab,e.IsRepeat);
+            return;
+        }
         if (ReplyOpen)
         {
             var key = (Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key);
@@ -229,13 +237,7 @@ sealed partial class ChatCraftWindow : Window
             e.Handled = HandleReplyKey(key, e.IsRepeat);
             return;
         }
-        if (e.Key == Key.Tab && modifiers == ModifierKeys.Control && hasReply && !WaitingForReply && !choosing)
-        {
-            e.Handled = true;
-            if (!e.IsRepeat)
-                ShowReply();
-        }
-        else if (e.Key == Key.Escape)
+        if (e.Key == Key.Escape)
         {
             e.Handled = true;
             if (!e.IsRepeat)
@@ -412,7 +414,8 @@ sealed partial class ChatCraftWindow : Window
             TimeSpan.FromMilliseconds(700)) { EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut } });
         if (autoplay)
         {
-            if(colorPanel==null)flow.Reader.StartPlayback(1);
+            if(colorPanel==null && helpOverlay==null)flow.Reader.StartPlayback(1);
+            else if(helpOverlay!=null){helpResume=1;helpReader=flow.Reader;}
             else { colorResume=1;colorReader=flow.Reader; }
         }
         Wake();
@@ -432,14 +435,14 @@ sealed partial class ChatCraftWindow : Window
         UpdateDraftWord();
     }
 
-    void ReplayReply()
+    void ReplayReply(bool autoplay = true)
     {
         if (!hasReply || WaitingForReply || choosing)
             return;
         flow.Reader.PausePlayback();
         flow.Reader.Seek(0);
         soundedAnchor = -1;
-        ShowReply(autoplay: true);
+        ShowReply(autoplay: autoplay);
     }
 
     void ResetReplyFade()
@@ -476,6 +479,7 @@ sealed partial class ChatCraftWindow : Window
         if (!ReplyOpen || reader.PlaybackDirection == 0)
             return;
         returnAfterPlayback = true;
+        Wake(); // Reader resumes must also restart the independent white-text display loop.
         if (soundedAnchor == reader.TextAnchor)
             return;
         soundedAnchor = reader.TextAnchor;
@@ -495,6 +499,8 @@ sealed partial class ChatCraftWindow : Window
                 if (!repeat) ChooseChat();
                 return true;
             case Forms.Keys.Control | Forms.Keys.Tab:
+                if (!repeat) ReplayReply(autoplay: false);
+                return true;
             case Forms.Keys.Enter:
                 if (!repeat) ShowDraft();
                 return true;
@@ -887,7 +893,23 @@ sealed partial class ChatCraftWindow : Window
 
     void ToggleFullscreen()
     {
-        ApplyWindowScale(fullscreen ? restoreWindowScale : 1);
+        if (fullscreen)
+        {
+            WindowStyle = WindowStyle.SingleBorderWindow;
+            ResizeMode = ResizeMode.CanResize;
+            WindowState = WindowState.Normal;
+            Width = 1000;
+            Height = 650;
+            fullscreen = false;
+            return;
+        }
+        IntPtr window = new WindowInteropHelper(this).Handle;
+        if (window == IntPtr.Zero) return;
+        var bounds = Forms.Screen.FromHandle(window).Bounds;
+        WindowState = WindowState.Normal;
+        WindowStyle = WindowStyle.None;
+        ResizeMode = ResizeMode.NoResize;
+        fullscreen = SetWindowPos(window, IntPtr.Zero, bounds.Left, bounds.Top, bounds.Width, bounds.Height, 0x14);
     }
 
     protected override void OnClosed(EventArgs e)

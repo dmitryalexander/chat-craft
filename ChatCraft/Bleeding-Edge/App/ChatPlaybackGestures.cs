@@ -70,10 +70,11 @@ sealed partial class ChatCraftWindow
     protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         base.OnPreviewMouseLeftButtonDown(e);
-        if(colorPanel!=null||choosing||GestureActive)return;
+        if(helpOverlay!=null||colorPanel!=null||choosing||GestureActive)return;
         var modifiers=Keyboard.Modifiers;
         if(modifiers!=ModifierKeys.Control && modifiers!=ModifierKeys.Shift)return;
         Point p=e.GetPosition(layout);
+        if(!InsideSimulation(p))return;
         if(modifiers==ModifierKeys.Control)
         {
             volumeDragging=true;gestureMoved=false;
@@ -120,7 +121,7 @@ sealed partial class ChatCraftWindow
 
     void UpdateGestureMarker(Point p)
     {
-        if(colorPanel==null&&!choosing&&hasReply&&!WaitingForReply&&Keyboard.Modifiers==ModifierKeys.Shift)
+        if(helpOverlay==null&&colorPanel==null&&!choosing&&hasReply&&!WaitingForReply&&Keyboard.Modifiers==ModifierKeys.Shift && (GestureActive||InsideSimulation(p)))
         {
             double fraction=Math.Max(0,Math.Min(1,p.X/Math.Max(1,layout.ActualWidth)));
             gestureLayer.Show(fraction,"Reply "+Math.Round(fraction*100)+"%");

@@ -20,7 +20,7 @@ sealed partial class ChatCraftWindow
         backgroundNoise.Master=morse.Volume;
         backgroundNoise.Suspended=closed || WindowState==WindowState.Minimized;
         backgroundNoise.Playing=!closed && ReplyOpen && flow!=null && flow.Reader.PlaybackDirection!=0
-            && !scrubbingReply && colorPanel==null;
+            && !scrubbingReply && colorPanel==null && helpOverlay==null;
     }
     internal void SetMasterVolume(double value)
     {

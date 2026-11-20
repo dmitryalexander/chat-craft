@@ -3,11 +3,9 @@
 A native Windows interface for your own Codex chats, with procedural smoke,
 flowing text playback and dial-up-inspired sound.
 
-**[Watch the Chat Craft demo](https://www.youtube.com/watch?v=HEeHiGlLMHU)** · **[Download for Windows](https://github.com/dmitryalexander/chat-craft/releases/latest)**
+**[Download for Windows](https://github.com/dmitryalexander/chat-craft/releases/latest)**
 
-**Keyboard controls: press F1 to open the controls overlay; press F1 or Esc to close it.**
-
-*The F1 overlay is available in the current local build (0.20.4) and is planned for the next public release. The published 0.19.1 download does not include it yet.*
+**Press F1 in the app to see all keyboard controls and mouse gestures.** Press F1 or Esc to close help.
 
 ## Requirements
 
@@ -39,41 +37,29 @@ installed Windows Japanese IME. Missing fonts use Windows font fallback.
 The WordCraft and PageCraft folders contain the shared source needed for this
 app, not complete distributions of those applications.
 
-## New in 0.19.1
+## New in 0.20.6
 
-Ctrl+Shift+Space replays from the beginning. Shift+Space now types a normal
-space, fixing uppercase phrases such as CAPS LOCK. Mouse wheel resizes the
-actual window between 25% and 100% of the current monitor dimensions.
-Wheel over Settings scrolls the panel normally.
-
-## New in 0.19.0
-
-Caps Lock now includes master sound volume, WordCraft-style Dark/Darker/Darkest
-background noise with independent primary and reading layers, and a four-step
-graphics quality slider. Lower quality reduces actual GPU simulation resolution
-and pressure-solver work while reading text stays sharp.
-
-See [all controls and sound options](CONTROLS.md). New downloads start at Medium.
+- F1 opens a dark keyboard-controls overlay with rounded keycaps and compact spacing. Closing it correctly resumes previously playing white reply text.
+- Ctrl+Tab opens the latest reply at the beginning, paused. Press Space to play. Ctrl+Shift+Space restarts with playback.
+- Mouse wheel scales only the simulation from 25% to 100% inside the fixed window. The black surround reveals rounded canvas corners.
+- Caps Lock includes master volume, optional background sound layers and Low/Medium/High/Ultra graphics quality. New downloads start at Medium.
 
 ## Controls
 
-**Next build:** `F1` shows the keyboard controls overlay; `F1` or `Esc` closes it.
-
-The table below describes the currently published 0.19.1 release.
-
 | Control | Action |
 | --- | --- |
+| F1 | Keyboard controls overlay; Esc closes it |
 | Ctrl+O | Choose an existing saved Codex chat |
 | Enter | Send draft to the selected chat |
 | Space during reply | Pause/resume |
 | Shift held | Slower reply playback |
 | Ctrl+Shift+Space | Replay latest loaded reply |
-| Ctrl+Tab | Reopen reply at current position |
+| Ctrl+Tab | Open latest reply at the beginning, paused; Space plays |
 | Shift+left-click/drag | Seek through latest reply |
 | Ctrl+left-drag vertically | App sound volume |
 | Caps Lock | Sound volume, background sound, graphics quality and colors |
-| Mouse wheel | Resize centered window, 25–100% of monitor dimensions |
-| Backtick or tilde | Fullscreen / restore last wheel size |
+| Mouse wheel | Scale centered simulation canvas 25–100% inside fixed window; black surround |
+| Backtick or tilde | Native fullscreen, independently of simulation zoom |
 
 ## Privacy and local files
 
@@ -98,6 +84,7 @@ powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\T
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Playback-Gestures.ps1
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Runtime-Settings.ps1
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Replay-Window-Zoom.ps1
+powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Help-Overlay.ps1
 ~~~
 
 Test-Codex-Discovery.ps1 is a separate opt-in integration test: it reads your

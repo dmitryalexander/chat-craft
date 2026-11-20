@@ -1,13 +1,42 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
-using Forms = System.Windows.Forms;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 sealed partial class ChatCraftWindow
 {
-    double windowScale = 1;
-    double restoreWindowScale = .65;
+    readonly Grid windowSurface = new Grid { Background = Brushes.Black };
+    double simulationScale = 1;
+
+    void InitializeSimulationViewport()
+    {
+        layout.HorizontalAlignment = HorizontalAlignment.Center;
+        layout.VerticalAlignment = VerticalAlignment.Center;
+        layout.ClipToBounds = true;
+        windowSurface.Children.Add(layout);
+        Content = windowSurface;
+        windowSurface.SizeChanged += (s,e) => UpdateSimulationViewport();
+    }
+
+    void UpdateSimulationViewport()
+    {
+        if(windowSurface.ActualWidth <= 0 || windowSurface.ActualHeight <= 0)return;
+        layout.Width = windowSurface.ActualWidth * simulationScale;
+        layout.Height = windowSurface.ActualHeight * simulationScale;
+        if(simulationScale < 1)
+        {
+            double radius=Math.Min(24,Math.Min(layout.Width,layout.Height)/2);
+            var rounded=new RectangleGeometry(new Rect(0,0,layout.Width,layout.Height),radius,radius);
+            rounded.Freeze();
+            layout.Clip=rounded;
+        }
+        else layout.Clip=null;
+        if(colorPanel!=null)colorPanel.MaxWidth=Math.Max(1,windowSurface.ActualWidth-36);
+    }
+
+    internal bool InsideSimulation(Point p)
+    { return p.X>=0 && p.Y>=0 && p.X<layout.ActualWidth && p.Y<layout.ActualHeight && (layout.Clip==null || layout.Clip.FillContains(p)); }
 
     internal bool HandleSpaceShortcut(Key key, ModifierKeys modifiers, bool repeat)
     {
@@ -23,46 +52,27 @@ sealed partial class ChatCraftWindow
         return false;
     }
 
-    internal static double NextWindowScale(double current, int wheelDelta)
+    internal static double NextSimulationScale(double current, int wheelDelta)
     {
         if (Double.IsNaN(current) || Double.IsInfinity(current)) current = 1;
         return Math.Max(.25, Math.Min(1, current + wheelDelta / 120.0 * .05));
     }
 
-    internal static System.Drawing.Rectangle ScaledWindowBounds(System.Drawing.Rectangle screen, double scale)
+    internal bool ApplySimulationScale(double value)
     {
-        scale = NextWindowScale(scale, 0);
-        int width = Math.Max(1, (int)Math.Round(screen.Width * scale));
-        int height = Math.Max(1, (int)Math.Round(screen.Height * scale));
-        return new System.Drawing.Rectangle(screen.Left + (screen.Width - width) / 2,
-            screen.Top + (screen.Height - height) / 2, width, height);
-    }
-
-    internal bool ApplyWindowScale(double value)
-    {
-        IntPtr handle = new WindowInteropHelper(this).Handle;
-        if (handle == IntPtr.Zero || closed) return false;
-        double scale = NextWindowScale(value, 0);
-        var bounds = ScaledWindowBounds(Forms.Screen.FromHandle(handle).Bounds, scale);
-        WindowState = WindowState.Normal;
-        MinWidth = MinHeight = 1;
-        WindowStyle = WindowStyle.None;
-        ResizeMode = ResizeMode.NoResize;
-        // Monitor bounds and SetWindowPos both use physical pixels, including on
-        // monitors with negative coordinates or a different DPI from the primary.
-        if (!SetWindowPos(handle, IntPtr.Zero, bounds.Left, bounds.Top, bounds.Width, bounds.Height, 0x14)) return false;
-        windowScale = scale;
-        fullscreen = scale >= 1;
-        if (!fullscreen) restoreWindowScale = scale;
+        if(closed)return false;
+        simulationScale = NextSimulationScale(value, 0);
+        UpdateSimulationViewport();
         return true;
     }
 
     protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
     {
         base.OnPreviewMouseWheel(e);
+        if(helpOverlay!=null){e.Handled=true;return;}
         if (e.Handled || colorPanel != null) return;
         e.Handled = true;
         if (GestureActive || choosing || e.Delta == 0) return;
-        ApplyWindowScale(NextWindowScale(windowScale, e.Delta));
+        ApplySimulationScale(NextSimulationScale(simulationScale, e.Delta));
     }
 }

@@ -9,7 +9,8 @@ public static class JapaneseFixtureNative {
 }
 '@
 [void][JapaneseFixtureNative]::SetDllDirectory($app)
-$assembly=[Reflection.Assembly]::LoadFrom((Join-Path $app 'ChatCraft.exe'))
+$fixtureExe=if($env:CHATCRAFT_TEST_EXE){$env:CHATCRAFT_TEST_EXE}else{Join-Path $app 'ChatCraft.exe'}
+$assembly=[Reflection.Assembly]::LoadFrom($fixtureExe)
 $flags=[Reflection.BindingFlags]'Instance,Public,NonPublic'
 function Field($o,$name){$o.GetType().GetField($name,$flags).GetValue($o)}
 function Prop($o,$name){$o.GetType().GetProperty($name,$flags).GetValue($o,$null)}

@@ -1,7 +1,9 @@
-# Chat Craft controls — 0.19.1
+# Chat Craft controls — 0.20.6
 
 | Control | Action |
 | --- | --- |
+| F1 | Toggle keyboard controls overlay with rounded keycaps and dark translucent backdrop |
+| Esc in help | Close help and restore prior playback state |
 | Caps Lock | Open/close Settings: sound, graphics quality and colors |
 | Esc in Settings | Save and close Settings |
 | Sound volume slider | Master volume for typing/reply cues and background sound; 0 mutes |
@@ -18,10 +20,10 @@
 | Shift held | Slower reading |
 | Ctrl+Shift+Space | Replay latest reply from the beginning |
 | Shift+Space | Normal space while typing; returns from reply to typing |
-| Mouse wheel forward/back | Grow/shrink centered window, 25–100% of monitor width and height |
-| Ctrl+Tab | Reopen reply at current position |
+| Mouse wheel forward/back | Grow/shrink the centered simulation canvas inside the fixed window, 25–100%; black fills around it with rounded canvas corners |
+| Ctrl+Tab | Open the latest reply at the beginning, paused; Space starts playback |
 | Shift+left-click/drag | Seek through latest reply |
-| Backtick or tilde | Toggle fullscreen / last wheel size |
+| Backtick or tilde | Toggle native window fullscreen, independently of simulation zoom |
 
 Settings changes apply live and save independently of WordCraft.
 Minimizing fades background sound to silence and suspends smoke. Closing stops
