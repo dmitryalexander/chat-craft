@@ -3,6 +3,8 @@
 A native Windows interface for your own Codex chats, with procedural smoke,
 flowing text playback and dial-up-inspired sound.
 
+**[Watch the Chat Craft demo](https://www.youtube.com/watch?v=HEeHiGlLMHU)** · **[Download for Windows](https://github.com/dmitryalexander/chat-craft/releases/latest)**
+
 ## Requirements
 
 - Windows x64, .NET Framework 4.8 and a Direct3D 11-capable graphics driver.
@@ -78,6 +80,7 @@ After building, the following silent checks do not send a chat message:
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Reply-Deposit-Threshold.ps1
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Reply-Performance.ps1
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Playback-Gestures.ps1
+powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\ChatCraft\Tools\Test-Runtime-Settings.ps1
 ~~~
 
 Test-Codex-Discovery.ps1 is a separate opt-in integration test: it reads your
